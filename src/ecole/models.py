@@ -1,67 +1,48 @@
 from datetime import UTC, datetime
 from enum import Enum
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String
 from sqlalchemy import Enum as SAEnum
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-
-
-def _utcnow() -> datetime:
-    return datetime.now(UTC)
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, declared_attr, mapped_column
 
 
 class Base(DeclarativeBase):
-    pass
+    @declared_attr.directive
+    def __tablename__(cls) -> str:
+        return cls.__name__.lower()
 
 
-class SongStatus(str, Enum):
+class Status(str, Enum):
     DRAFT = "draft"
     PUBLISHED = "published"
     PRIVATE = "private"
 
 
 class Genre(Base):
-    __tablename__ = "genre"
-
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(100), index=True)
-
-    albums: Mapped[list["Album"]] = relationship(
-        back_populates="genre", cascade="all, delete-orphan"
-    )
+    name: Mapped[str]
 
 
 class Album(Base):
-    __tablename__ = "album"
-
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(200), index=True)
-    genre_id: Mapped[int] = mapped_column(ForeignKey("genre.id"), index=True)
+    name: Mapped[str]
+    genre_id: Mapped[int] = mapped_column(ForeignKey("genre.id"))
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=_utcnow, onupdate=_utcnow
-    )
-
-    genre: Mapped["Genre"] = relationship(back_populates="albums")
-    songs: Mapped[list["Song"]] = relationship(
-        back_populates="album", cascade="all, delete-orphan"
+        default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC)
     )
 
 
 class Song(Base):
-    __tablename__ = "song"
-    __table_args__ = (
-        CheckConstraint("duration >= 0", name="ck_song_duration_non_negative"),
-    )
-
     id: Mapped[int] = mapped_column(primary_key=True)
-    album_id: Mapped[int] = mapped_column(ForeignKey("album.id"), index=True)
-    name: Mapped[str] = mapped_column(String(200), index=True)
-    duration: Mapped[int] = mapped_column()
-    status: Mapped[SongStatus] = mapped_column(
-        SAEnum(SongStatus, name="song_status"), default=SongStatus.DRAFT, index=True
+    album_id: Mapped[int] = mapped_column(ForeignKey("album.id"))
+    name: Mapped[str]
+    duration: Mapped[int]
+    status: Mapped[Status] = mapped_column(
+        SAEnum(
+            Status,
+            create_constraint=True,
+            values_callable=lambda e: [m.value for m in e],
+        ),
+        default=Status.DRAFT,
     )
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=_utcnow
-    )
-
-    album: Mapped["Album"] = relationship(back_populates="songs")
+    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(UTC))

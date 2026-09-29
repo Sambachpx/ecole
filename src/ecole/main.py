@@ -6,6 +6,7 @@ from fastapi import Depends, FastAPI
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from ecole.admin import setup_admin
 from ecole.models import Base
 from ecole.seed import is_empty, seed
 
@@ -26,6 +27,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(lifespan=lifespan)
+
+admin = setup_admin(app, engine)
 
 
 def get_db() -> Iterator[Session]:

@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.11"
 dependencies = [
     "fastapi[standard]>=0.141.1",
+    "sqladmin>=0.32.0",
     "sqlalchemy>=2.0",
 ]
 
@@ -18,3 +19,8 @@ ecole = "ecole:main"
 [build-system]
 requires = ["uv_build>=0.12.19,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.ruff.lint.per-file-ignores]
+# SQLAdmin exige des listes en attributs de classe (pattern du framework,
+# identique à la doc officielle) : RUF012 est un faux positif ici.
+"src/ecole/admin.py" = ["RUF012"]

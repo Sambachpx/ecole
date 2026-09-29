@@ -1,9 +1,17 @@
+from __future__ import annotations
+
 from datetime import UTC, datetime
 from enum import Enum
 
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import DeclarativeBase, Mapped, declared_attr, mapped_column
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    declared_attr,
+    mapped_column,
+    relationship,
+)
 
 
 class Base(DeclarativeBase):
@@ -21,6 +29,10 @@ class Status(str, Enum):
 class Genre(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
+    albums: Mapped[list[Album]] = relationship(back_populates="genre")
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Album(Base):
@@ -30,6 +42,11 @@ class Album(Base):
     updated_at: Mapped[datetime] = mapped_column(
         default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC)
     )
+    genre: Mapped[Genre] = relationship(back_populates="albums")
+    songs: Mapped[list[Song]] = relationship(back_populates="album")
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Song(Base):
@@ -46,3 +63,7 @@ class Song(Base):
         default=Status.DRAFT,
     )
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(UTC))
+    album: Mapped[Album] = relationship(back_populates="songs")
+
+    def __str__(self) -> str:
+        return self.name

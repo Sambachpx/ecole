@@ -1,0 +1,14 @@
+name: microservices
+
+services:
+    redis:
+        image: redis:8.10.2
+        ports:
+            - "6379:6379"
+
+    mqtt:
+        image: eclipse-mosquitto:2.1.2-alpine
+        ports:
+        - "1883:1883"
+        volumes:
+        - ./infra/mosquitto:/mosquitto/config:ro

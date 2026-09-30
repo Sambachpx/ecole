@@ -8,3 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+
+# App runtime (recréés au lancement, pas de migrations gérées)
+*.db
+uploads/

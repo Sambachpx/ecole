@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ecole.models import Album, Genre, Song, Status
+from spotipy.models import Album, Genre, Song, Status
 
 
 def is_empty(db: Session) -> bool:

@@ -53,7 +53,10 @@ class Song(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     album_id: Mapped[int] = mapped_column(ForeignKey("album.id"))
     name: Mapped[str]
-    duration: Mapped[int]
+    duration: Mapped[int] = mapped_column(default=0)
+    # Chemin du fichier audio sur disque. Nullable : le fichier est
+    # téléversé après la création de la Song (TP #04).
+    file: Mapped[str | None] = mapped_column(nullable=True, default=None)
     status: Mapped[Status] = mapped_column(
         SAEnum(
             Status,

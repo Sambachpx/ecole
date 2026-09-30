@@ -3,7 +3,7 @@ from sqladmin import Admin, ModelView
 from sqladmin.filters import StaticValuesFilter
 from sqlalchemy.engine import Engine
 
-from ecole.models import Album, Genre, Song, Status
+from spotipy.models import Album, Genre, Song, Status
 
 
 class GenreAdmin(ModelView, model=Genre):
@@ -36,6 +36,7 @@ class SongAdmin(ModelView, model=Song):
         Song.album,
         Song.name,
         Song.duration,
+        Song.file,
         Song.status,
         Song.created_at,
     ]

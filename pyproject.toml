@@ -1,5 +1,5 @@
 [project]
-name = "ecole"
+name = "spotipy"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -9,12 +9,14 @@ authors = [
 requires-python = ">=3.11"
 dependencies = [
     "fastapi[standard]>=0.141.1",
+    "httpx>=0.28.1",
+    "mutagen>=1.48.1",
     "sqladmin>=0.32.0",
     "sqlalchemy>=2.0",
 ]
 
 [project.scripts]
-ecole = "ecole:main"
+spotipy = "spotipy:main"
 
 [build-system]
 requires = ["uv_build>=0.12.19,<0.13.0"]
@@ -23,4 +25,4 @@ build-backend = "uv_build"
 [tool.ruff.lint.per-file-ignores]
 # SQLAdmin exige des listes en attributs de classe (pattern du framework,
 # identique à la doc officielle) : RUF012 est un faux positif ici.
-"src/ecole/admin.py" = ["RUF012"]
+"src/spotipy/admin.py" = ["RUF012"]
